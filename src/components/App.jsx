@@ -1,46 +1,21 @@
-import { useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
 import Filter from './Filter/Filter';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import { AppCont } from './../App.styled';
-import ContactsData from '../data.json'
+import { createContactAction, deleteContact } from 'redux/contacts/slice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const App = () => {
-  const [contacts, setContacts] = useState(null);
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    const localData = localStorage.getItem('contacts');
-    localData && JSON.parse(localData).length
-    ? setContacts(JSON.parse(localData))
-    : setContacts(ContactsData);
-  }, [])
-
-  useEffect(() => {
-    contacts && localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts])
+  const {contacts} = useSelector((store) => store.contacts)
+  const { filter } = useSelector(store => store.filter);
+  const dispatch = useDispatch()
   
   const createPerson = inputValues => {
-    const isAlreadyExist = contacts.find(
-      el => el.name.toLowerCase() === inputValues.name.toLowerCase()
-    );
-    if (isAlreadyExist)
-      return alert(`${inputValues.name} is already in contacts`);
-
-    const newPerson = {
-      id: nanoid(),
-      ...inputValues,
-    };
-    setContacts(prev => [newPerson, ...prev]);
+    dispatch(createContactAction(inputValues));
   };
 
   const handleDelete = id => {
-    setContacts(prev => prev.filter(el => el.id !== id));
-  };
-
-  const filterPerson = filterText => {
-    setFilter(filterText);
+    dispatch(deleteContact(id))
   };
 
   const getFilteredContacts = () => {
@@ -55,11 +30,11 @@ const App = () => {
       <ContactForm createPerson={createPerson} />
 
       <h2>Contacts</h2>
-      <Filter filterPerson={filterPerson} />
-      {contacts&&<ContactList
+      <Filter />
+      <ContactList
         contacts={getFilteredContacts()}
         handleDelete={handleDelete}
-      />}
+      />
     </AppCont>
   );
 }
