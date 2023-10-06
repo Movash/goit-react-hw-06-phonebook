@@ -1,10 +1,11 @@
-import React from "react";
+import React from 'react';
 import { FilterCont } from './Filter.styled';
-import { useDispatch, useSelector } from "react-redux";
-import { saveFilter } from "redux/filter/slice";
+import { useDispatch, useSelector } from 'react-redux';
+import { saveFilter } from 'redux/filter/filterSlice';
+import { getFilter } from 'redux/selectors';
 
 const Filter = () => {
-  const { filter } = useSelector(store => store.filter);
+  const { filter } = useSelector(getFilter);
   const dispatch = useDispatch();
 
   const handleChangeFilter = ({ target: { value } }) => {
@@ -16,7 +17,7 @@ const Filter = () => {
       <input
         type="text"
         name="filter"
-        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+        pattern="^[^\d]+$"
         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
         required
         value={filter}
@@ -24,6 +25,6 @@ const Filter = () => {
       />
     </FilterCont>
   );
-}
+};
 
-export default Filter
+export default Filter;
